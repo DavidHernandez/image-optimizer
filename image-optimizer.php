@@ -15,6 +15,11 @@ configure_parameters($download_files, $process_files, $upload_files, $env, $site
 execute($download_files, $process_files, $upload_files, $env, $site, $destination, $ssh_key);
 
 function execute($download_files, $process_files, $upload_files, $env, $site, $destination, $ssh_key) {
+  if (!$download_files && !$process_files && !$upload_files) {
+    // Prevent the execution if no parameters are configured.
+    return;
+  }
+
   $started = time();
   println('Starting execution at ' . date('l jS \of F Y h:i:s A'), 1);
   if ($download_files) {
