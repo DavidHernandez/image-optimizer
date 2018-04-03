@@ -1,7 +1,10 @@
-## Image Optimizer
+# Image Optimizer
 This script will download all the images on a Pantheon environment, optimize them and re-upload them back to the site.
 
-### How to use
+## Dependencies
+`composer install` will download all the PHP dependencies. The downloaded package has system dependencies. Check them here: https://github.com/spatie/image-optimizer
+
+## How to use
 Simple way, with a single command:
 ```
 ./image-optimizer.php --env dev --site [uuid of the Pantheon site] --destination [path to folder to host the files] --ssh [path to your SSH key] --download --process --upload
@@ -39,5 +42,5 @@ $ssh_key = '~/.ssh/id_rsa';
 execute($download_files, $process_files, $upload_files, $env, $site, $destination, $ssh_key);
 ```
 
-### Dependencies
-`composer install` will download all the PHP dependencies. The downloaded package has system dependencies. Check them here: https://github.com/spatie/image-optimizer
+### What if I do not use Pantheon?
+No worries! You can still use this script! You can run it directly on the server just using the `--process` option and specifying the `--destination` of your images folder. Or you can manually download and upload the files from your site instead of using the `--download` and `--upload` options.
