@@ -3,7 +3,12 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Spatie\ImageOptimizer\OptimizerChainFactory;
+use Spatie\ImageOptimizer\OptimizerChain;
+use Spatie\ImageOptimizer\Optimizers\Gifsicle;
+use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
+use Spatie\ImageOptimizer\Optimizers\Optipng;
+use Spatie\ImageOptimizer\Optimizers\Pngquant;
+use Spatie\ImageOptimizer\Optimizers\Svgo;
 
 $download_files = $process_files = $upload_files = FALSE;
 $env = $site = $destination = $ssh_key = NULL;
@@ -65,10 +70,41 @@ function process_files($folder, $counter = 0) {
 }
 
 function optimize_file($file) {
-  $optimizer = OptimizerChainFactory::create();
+  $extension = pathinfo($file, PATHINFO_EXTENSION);
+
+  $optimizerChain = new OptimizerChain;
+
+  switch($extension) {
+    case 'jpg':
+    case 'jpeg':
+      $optimizerChain
+        ->addOptimizer(new Jpegoptim([
+          '--strip-all',
+          '--all-progressive',
+        ]));
+      break;
+    case 'png':
+      $optimizerChain
+        ->addOptimizer(new Pngquant([
+          '--force',
+          '--quality=100-100'
+        ]))
+        ->addOptimizer(new Optipng([
+          '-i0',
+          '-quiet',
+        ]));
+      break;
+    case 'gif':
+      $optimizerChain
+        ->addOptimizer(new Gifsicle([
+          '-b',
+          '-O3',
+        ]));
+      break;
+  }
 
   try {
-    $optimizer->optimize($file);
+    $optimizerChain->optimize($file);
   }
   catch (Exception $e) {
     // Always log errors.
